@@ -1,0 +1,63 @@
+{% extends "portal/base.html" %}
+
+{% block title %}My Attendance{% endblock %}
+{% block page_title %}My Attendance{% endblock %}
+{% block page_subtitle %}Subject-wise attendance percentage based on the subjects you are currently studying.{% endblock %}
+
+{% block content %}
+<section class="cards-grid">
+    <article class="card">
+        <h3>Overall Attendance</h3>
+        <div class="metric-value">{{ overall_percentage }}%</div>
+        <p class="muted">Present in {{ overall_present }} out of {{ overall_total }} classes.</p>
+    </article>
+    <article class="card">
+        <h3>Course</h3>
+        <div class="metric-value">{{ student.course.name|default:"Not Assigned" }}</div>
+        <p class="muted">Assigned by admin in student profile.</p>
+    </article>
+    <article class="card">
+        <h3>Subjects Enrolled</h3>
+        <div class="metric-value">{{ subject_rows|length }}</div>
+        <p class="muted">Mapped subjects for attendance tracking.</p>
+    </article>
+</section>
+
+<section class="panel">
+    <h2>Subject-wise Attendance Percentage</h2>
+    {% if subject_rows %}
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Subject</th>
+                        <th>Teacher</th>
+                        <th>Present / Total</th>
+                        <th>Percentage</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in subject_rows %}
+                        <tr>
+                            <td>{{ row.subject.title }} ({{ row.subject.code }})</td>
+                            <td>{{ row.teachers }}</td>
+                            <td>{{ row.present_classes }} / {{ row.total_classes }}</td>
+                            <td>
+                                {% if row.percentage >= 85 %}
+                                    <span class="badge teal">{{ row.percentage }}%</span>
+                                {% elif row.percentage >= 75 %}
+                                    <span class="badge navy">{{ row.percentage }}%</span>
+                                {% else %}
+                                    <span class="badge warn">{{ row.percentage }}%</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert error">No subjects are assigned to your profile yet. Ask admin to map your subjects.</div>
+    {% endif %}
+</section>
+{% endblock %}
